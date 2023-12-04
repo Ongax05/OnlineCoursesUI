@@ -1,0 +1,60 @@
+@page "/User"
+
+@using Dtos
+@using Interfaces
+
+@inject IUserServices Userservices
+
+<EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="@nameof(Model.Email)">@nameof(Model.Email)</label>
+        <InputText id="@nameof(Model.Email)" @bind-Value="Model.Email" class="form-control" />
+        <ValidationMessage For="@(() => Model.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(Model.Username)">@nameof(Model.Username)</label>
+        <InputText id="@nameof(Model.Username)" @bind-Value="Model.Username" class="form-control" />
+        <ValidationMessage For="@(() => Model.Username)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(Model.Password)">@nameof(Model.Password)</label>
+        <InputText type="password" id="@nameof(Model.Password)" @bind-Value="Model.Password" class="form-control" />
+        <ValidationMessage For="@(() => Model.Password)" />
+    </div>
+
+    <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <InputText type="password" id="confirmPassword" @bind-Value="confirmPassword" class="form-control" />
+        <ValidationMessage For="@(() => confirmPassword)" />
+    </div>
+
+    <div class="m-2 p-2 d-flex justify-content-center">
+        <button disabled="@DisableBtn()" type="submit" @onkeypress:preventDefault
+            class="btn btn-primary">Submit</button>
+    </div>
+</EditForm>
+
+@code {
+    private RegisterDto Model = new();
+    private string confirmPassword;
+
+    private bool DisableBtn()
+    {
+        return confirmPassword != Model.Password;
+    }
+    private async Task HandleValidSubmit()
+    {
+        bool success = await Userservices.RegisterUser(Model);
+
+        if (success)
+        {
+            Model = new RegisterDto();
+            confirmPassword = "";
+        }
+    }
+}

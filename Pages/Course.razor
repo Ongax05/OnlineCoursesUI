@@ -1,0 +1,101 @@
+@page "/Courses"
+
+@using Dtos
+@using Interfaces
+@inject ICourseServices CourseServices
+
+<PageTitle>Course Images</PageTitle>
+
+<h1>Upload course image</h1>
+
+<EditForm Model="model" OnValidSubmit="LoadCourse">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    
+    <div class="form-group">
+        <label for="@nameof(model.Title)">@nameof(model.Title)</label>
+        <InputText id="@nameof(model.Title)" @bind-Value="model.Title" class="form-control" />
+        <ValidationMessage For="@(() => model.Title)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(model.Description)">@nameof(model.Description)</label>
+        <InputText id="@nameof(model.Description)" @bind-Value="model.Description" class="form-control" />
+        <ValidationMessage For="@(() => model.Description)" />
+    </div>
+
+    <div class="form-group">
+    <label for="@nameof(model.InstructorId)">Instructor ID</label>
+    <InputNumber type="number" id="@nameof(model.InstructorId)" @bind-Value="model.InstructorId" class="form-control" />
+    <ValidationMessage For="@(() => model.InstructorId)" />
+    </div>
+
+
+    <div class="mt-2 mb-2 d-flex justify-content-center">    
+        <InputFile class="form-control" OnChange="HandleChange" accept=".png, .jpg, .jpeg" />
+    </div>
+
+    <button @onkeypress:preventDefault type="submit">Submit</button>
+</EditForm>
+
+@if (errors.Count > 0)
+{
+    <h2>Errors</h2>
+    <ul class="text-danger">
+        @foreach (var error in errors)
+        {
+            <li>@error</li>
+        }
+    </ul>
+}
+
+@code {
+    private long maxFileSize = 1024 * 1024 * 3; // 3MB
+    private List<string> errors = new();
+    
+    private record Model
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public int InstructorId { get; set; }
+        public IBrowserFile File { get; set; }
+        public float AverageRating = 0;
+    }
+
+    private Model model = new ();
+
+    private void HandleChange (InputFileChangeEventArgs e)
+    {
+        model.File = e.GetMultipleFiles(1)[0];
+    }
+
+    private async void LoadCourse()
+    {
+        try
+        {
+            errors.Clear();
+
+            if (model.File is null)
+            {
+                errors.Add("Error: No file selected.");
+                return;
+            }
+
+            CourseDto courseDto = new();
+
+            using (var stream = model.File.OpenReadStream(maxFileSize))
+            {
+                var memoryStream = new MemoryStream();
+                await stream.CopyToAsync(memoryStream);
+                var byteArray = memoryStream.ToArray();
+                courseDto.Image = byteArray;
+            }
+
+            await CourseServices.PostCourse(courseDto);
+        }
+        catch (Exception ex)
+        {
+            errors.Add($"Error: {ex}");
+        }
+    }
+}
