@@ -1,12 +1,12 @@
-@page "/Courses"
+@page "/CourseRegister"
 
 @using Dtos
 @using Interfaces
 @inject ICourseServices CourseServices
 
-<PageTitle>Course Images</PageTitle>
+<PageTitle>Course Register</PageTitle>
 
-<h1>Upload course image</h1>
+<h1>Upload new course</h1>
 
 <EditForm Model="model" OnValidSubmit="LoadCourse">
     <DataAnnotationsValidator />
@@ -31,11 +31,12 @@
     </div>
 
 
-    <div class="mt-2 mb-2 d-flex justify-content-center">    
+    <div class="mt-2 pt-2 d-flex justify-content-center">    
         <InputFile class="form-control" OnChange="HandleChange" accept=".png, .jpg, .jpeg" />
     </div>
-
-    <button @onkeypress:preventDefault type="submit">Submit</button>
+    <div class="m-2 p-2 d-flex justify-content-center">
+        <button @onkeypress:preventDefault class="btn btn-primary" type="submit">Submit</button>
+    </div>
 </EditForm>
 
 @if (errors.Count > 0)
@@ -59,7 +60,6 @@
         public string Description { get; set; }
         public int InstructorId { get; set; }
         public IBrowserFile File { get; set; }
-        public float AverageRating = 0;
     }
 
     private Model model = new ();
@@ -69,7 +69,7 @@
         model.File = e.GetMultipleFiles(1)[0];
     }
 
-    private async void LoadCourse()
+    private async Task LoadCourse()
     {
         try
         {
@@ -81,7 +81,13 @@
                 return;
             }
 
-            CourseDto courseDto = new();
+            CourseDto courseDto = new()
+            {
+                Title= model.Title,
+                Description = model.Description,
+                InstructorId = model.InstructorId,
+                AverageRating = 0
+            };
 
             using (var stream = model.File.OpenReadStream(maxFileSize))
             {
@@ -91,11 +97,17 @@
                 courseDto.Image = byteArray;
             }
 
-            await CourseServices.PostCourse(courseDto);
+            bool result = await CourseServices.PostCourse(courseDto);
+            if (result)
+            {
+                model = new ();
+            }
         }
         catch (Exception ex)
         {
             errors.Add($"Error: {ex}");
+            model = new ();
         }
+        
     }
 }

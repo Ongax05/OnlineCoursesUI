@@ -8,7 +8,7 @@ namespace OnlineCoursesUI.Interfaces
 {
     public interface IUserServices
     {
-        Task<bool> SetValidationToken (LoginDto loginDto);
+        Task<HttpResponseMessage> LoginUser (LoginDto loginDto);
         Task<bool> RegisterUser (RegisterDto registerDto);
     }
 }

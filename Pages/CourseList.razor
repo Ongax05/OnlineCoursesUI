@@ -1,0 +1,60 @@
+@page "/CourseList"
+@using Interfaces
+@using Dtos
+
+@inject ICourseServices CourseServices
+
+@if (AllFine)
+{
+    <div class="container">
+        <div class="row">
+            @foreach (var item in Courses)
+            {
+                var base64String = Convert.ToBase64String(item.Image);
+                var imageSrc = $"data:image/png;base64,{base64String}";
+
+                <div class="col-sm-3 mb-3 mb-sm-3">
+                    <div class="card" style="width: 18rem;">
+                        <img src="@imageSrc" class="card-img-top p-3" alt="Image">
+                        <div class="card-body">
+                            <h5 class="aling-text-center card-title">@item.Title</h5>
+                            <p class="card-text">@item.Description</p>
+                            <p class="card-text">@item.InstructorId</p>
+                            <p class="card-text">@item.AverageRating</p>
+                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="container text-center">
+        <h2>Error</h2>
+        <p>@Error</p>
+        <p>Usually the api is disconected</p>
+    </div>
+}
+
+@code {
+    private IEnumerable<CourseDto> Courses;
+    private string Error;
+    private bool AllFine = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await base.OnInitializedAsync();
+            Courses = await CourseServices.GetCourses();
+            AllFine = true;
+        }
+        catch (Exception e)
+        {
+            Error = $"An error has occurred: {e.Message}";
+            AllFine = false;
+        }
+    }
+}

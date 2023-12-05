@@ -1,0 +1,59 @@
+@page "/"
+
+@layout LoginLayout
+
+@using Dtos
+@using Interfaces
+@using Services
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inject IUserServices Userservices
+@inject AuthenticationStateProvider authenticationProvider
+@inject NavigationManager NavManager
+
+<h2 class="text-center">Login</h2>
+
+<EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="@nameof(Model.Username)">@nameof(Model.Username)</label>
+        <InputText id="@nameof(Model.Username)" @bind-Value="Model.Username" class="form-control" />
+        <ValidationMessage For="@(() => Model.Username)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(Model.Password)">@nameof(Model.Password)</label>
+        <InputText type="password" id="@nameof(Model.Password)" @bind-Value="Model.Password" class="form-control" />
+        <ValidationMessage For="@(() => Model.Password)" />
+    </div>
+
+    <div class="m-2 p-2 d-flex justify-content-center">
+        <button type="submit" @onkeypress:preventDefault class="btn btn-primary">Submit</button>
+    </div>
+</EditForm>
+
+@if (CorrectLogin)
+{
+    <h3 style="color: rgb(248, 0, 0);" class="text-center"></h3>
+}
+
+@code {
+    private LoginDto Model = new();
+    private bool CorrectLogin = true;
+    private async Task HandleValidSubmit()
+    {
+        var result = await Userservices.LoginUser(Model);
+        if (result.IsSuccessStatusCode)
+        {
+            Model = new();
+            CorrectLogin = true;
+        }
+        else
+        {
+            Model = new();
+            CorrectLogin = false;
+        }
+    }
+}

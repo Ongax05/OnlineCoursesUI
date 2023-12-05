@@ -1,0 +1,37 @@
+@page "/Courses"
+
+<style>
+    .container button {
+        font-size: 1rem;
+    }
+
+    /* Agregar más estilos según sea necesario */
+</style>
+
+<h2 class="text-center">Discover our courses</h2>
+
+<div class="container text-center">
+    <p class="p-5">
+        In our innovative application, users have the exciting opportunity to explore a diverse range of courses on various subjects. Whether you're passionate about technology, arts, or science, our platform offers a curated selection of courses to cater to every interest. What sets our application apart is the interactive feature that allows users to not only enroll in courses but also share their valuable feedback through ratings. Your opinion matters, and with the ability to rate courses, you contribute to a vibrant community of learners. Join us on this educational journey where learning is not only enriching but also collaborative, with each rating shaping the learning experience for others.
+    </p>
+</div>
+
+<div class="container m-3 p-3">
+    <div class="row p-2">
+        <div class="col-5 d-flex justify-content-center">
+            <div>
+                <NavLink href="/CourseList">
+                    <button class="btn btn-primary" type="button">List Courses</button>
+                </NavLink>
+            </div>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-5 d-flex justify-content-center">
+            <div>
+                <NavLink href="/CourseRegister">
+                    <button class="btn btn-primary" type="button">Register new course</button>
+                </NavLink>
+            </div>
+        </div>
+    </div>
+</div>

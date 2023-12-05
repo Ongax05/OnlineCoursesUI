@@ -1,9 +1,11 @@
-@page "/User"
+@page "/UserRegister"
 
 @using Dtos
 @using Interfaces
 
 @inject IUserServices Userservices
+
+<h2 class="text-center">Register</h2>
 
 <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />

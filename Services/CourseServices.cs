@@ -17,9 +17,10 @@ namespace OnlineCoursesUI.Services
             return result;
         }
 
-        public async Task PostCourse (CourseDto courseDto)
+        public async Task<bool> PostCourse (CourseDto courseDto)
         {
-            await _httpClient.PostAsJsonAsync("api/Course", courseDto);
+            var response = await _httpClient.PostAsJsonAsync("api/Course", courseDto);
+            return response.IsSuccessStatusCode;
         }
     }
 }
