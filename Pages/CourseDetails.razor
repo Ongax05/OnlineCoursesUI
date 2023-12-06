@@ -67,13 +67,14 @@ else
         var AuthService = (AuthenticationService)authenticationProvider;
         var userInformation = await AuthService.GetAuthenticationStateAsync();
         UserId = int.Parse(userInformation.User.FindFirst("UserId").Value);
-        Console.WriteLine(UserId);
-        Instructor = await InstructorServices.GetInstructorByName(userInformation.User?.FindFirst(ClaimTypes.Name).Value);
+        
         int courseId = int.Parse(CourseId);
-        Console.WriteLine(CourseId);
+        
         courseComponentService.ChangeCourseId += StateHasChanged;
         courseId = courseComponentService.SelectedCourseId;
         Course = await CourseServices.GetCourseById(courseId);
+        
+        Instructor = await InstructorServices.GetInstructorByName(Course.Instructor.Name);
         StateHasChanged();
     }
 
