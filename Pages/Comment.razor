@@ -38,15 +38,17 @@
     </div>
 </EditForm>
 
-<h2 class="text-center">Comments</h2>
-
-@foreach (var comment in Comments)
+@if (Comments.Count() > 0)
 {
-    <p>
-        User id: @comment.UserId <br>
-        Comment: @comment.CourseComment
-    </p>
+    foreach (var comment in Comments)
+    {
+        <p>
+            User id: @comment.UserId <br>
+            Comment: @comment.CourseComment
+        </p>
+    }
 }
+
 
 
 
@@ -64,7 +66,9 @@
     private int _Qualification = 1;
 
     private CommentDto model = new();
-    private List<CommentDto> Comments = new();
+
+    [Parameter]
+    public List<CommentDto> Comments {get;set;}
     [Parameter]
     public int CourseId { get; set; }
     [Parameter]
@@ -86,10 +90,10 @@
                 CourseComment = model.CourseComment
             };
 
-        var comments = await CommentServices.GetComments();
-        Comments.AddRange(comments);
         await QualificationServices.PostQualification(qualificationDto);
         await CommentServices.PostComment(commentDto);
+        var comments = await CommentServices.GetComments();
+        Comments.AddRange(comments);
         model = new();
         Qualification = 1;
     }
