@@ -1,0 +1,84 @@
+@page "/CourseDetails/{courseId}"
+
+@using Interfaces
+@using Dtos
+@using Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+@inject AuthenticationStateProvider authenticationProvider
+@inject IInstructorServices InstructorServices
+
+@implements IDisposable
+@attribute [Authorize(Roles = "User,Instructor")]
+
+@inject CourseComponentService courseComponentService
+@inject ICourseServices CourseServices
+@inject NavigationManager NavManager
+
+<head>
+    <style>
+        .Instructor-info{
+            font-size: small;
+        }
+    </style>
+</head>
+
+@if (Course != null)
+{
+    var base64String = Convert.ToBase64String(Course.Image);
+    var imageSrc = $"data:image/png;base64,{base64String}";
+
+    <h2 class="text-center mb-3">@Course.Title</h2>
+    <div>
+        <div class="row g-0">
+            <div class="col-md-4 ">
+                <img src="@imageSrc" class="img-fluid rounded-start course-Image" alt="Image">
+            </div>
+            <div class="col-md-8 p-4">
+                <p>@Course.Description</p>
+            </div>
+        </div>
+    </div>
+
+    <p class="Instructor-info"> 
+        Instructor id: @Instructor.Id <br>
+        Instructor name: @Instructor.Name <br>
+        Instructor description: @Instructor.Description
+    </p>
+
+    <Comment CourseId="int.Parse(CourseId)" UserId="UserId"></Comment>
+}
+else
+{
+    <p>No course details available</p>
+}
+
+@code {
+    [Parameter]
+    public string CourseId { get; set; }
+
+    private CourseWithEntities Course;
+    private InstructorDto Instructor;
+    public int UserId {get;set;}
+    protected override async void OnInitialized()
+    {
+        var AuthService = (AuthenticationService)authenticationProvider;
+        var userInformation = await AuthService.GetAuthenticationStateAsync();
+        UserId = int.Parse(userInformation.User.FindFirst("UserId").Value);
+        Console.WriteLine(UserId);
+        Instructor = await InstructorServices.GetInstructorByName(userInformation.User?.FindFirst(ClaimTypes.Name).Value);
+        int courseId = int.Parse(CourseId);
+        Console.WriteLine(CourseId);
+        courseComponentService.ChangeCourseId += StateHasChanged;
+        courseId = courseComponentService.SelectedCourseId;
+        Course = await CourseServices.GetCourseById(courseId);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        courseComponentService.ChangeCourseId -= StateHasChanged;
+    }
+}

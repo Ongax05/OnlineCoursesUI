@@ -1,9 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Security.Claims;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using Blazored.SessionStorage;
 using Dtos;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -57,8 +52,10 @@ namespace OnlineCoursesUI.Services
 
             var claims = new List<Claim>
                 {
+                    new("UserId", dataUser.Id.ToString()),
                     new(ClaimTypes.Name, dataUser.UserName),
-                    new(ClaimTypes.Email, dataUser.Email)
+                    new(ClaimTypes.Email, dataUser.Email),
+                    new("UserToken", dataUser.Token)
                 };
 
                 if (dataUser.Roles != null && dataUser.Roles.Count != 0)

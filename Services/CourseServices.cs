@@ -13,7 +13,7 @@ namespace OnlineCoursesUI.Services
         private readonly HttpClient _httpClient = httpClient;
         public async Task<IEnumerable<CourseDto>> GetCourses()
         {
-            var result = await _httpClient.GetFromJsonAsync<IEnumerable<CourseDto>>("/api/Course");
+            var result = await _httpClient.GetFromJsonAsync<IEnumerable<CourseDto>>("api/Course");
             return result;
         }
 
@@ -21,6 +21,12 @@ namespace OnlineCoursesUI.Services
         {
             var response = await _httpClient.PostAsJsonAsync("api/Course", courseDto);
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task<CourseWithEntities> GetCourseById(int Id)
+        {
+            var result = await _httpClient.GetFromJsonAsync<CourseWithEntities>($"/api/Course/ById?Id={Id}");
+            return result;
         }
     }
 }

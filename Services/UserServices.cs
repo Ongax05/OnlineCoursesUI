@@ -5,10 +5,9 @@ using OnlineCoursesUI.Interfaces;
 
 namespace OnlineCoursesUI.Services
 {
-    public class UserServices(HttpClient httpClient,IJSRuntime JSRuntime) : IUserServices
+    public class UserServices(HttpClient httpClient) : IUserServices
     {
         private readonly HttpClient _httpClient = httpClient;
-        private readonly IJSRuntime _JSRuntime = JSRuntime;
 
         public async Task<bool> RegisterUser(RegisterDto registerDto)
         {
@@ -21,7 +20,7 @@ namespace OnlineCoursesUI.Services
 
         public async Task<HttpResponseMessage> LoginUser(LoginDto loginDto)
         {
-            var result = await _httpClient.PostAsJsonAsync("/api/User/token", loginDto);
+            var result = await _httpClient.PostAsJsonAsync("api/User/token", loginDto);
             return result;
         }
     }

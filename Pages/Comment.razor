@@ -1,0 +1,96 @@
+@page "/Comment"
+
+@using Interfaces
+@using Dtos
+@using Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+@inject AuthenticationStateProvider authenticationProvider
+@inject IQualificationServices QualificationServices
+@inject ICommentServices CommentServices
+
+@attribute [Authorize(Roles = "User,Instructor")]
+
+@inject CourseComponentService courseComponentService
+@inject ICourseServices CourseServices
+@inject NavigationManager NavManager
+
+<EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="@nameof(model.CourseComment)">@nameof(model.CourseComment)</label>
+        <InputText id="@nameof(model.CourseComment)" @bind-Value="model.CourseComment" class="form-control" />
+        <ValidationMessage For="@(() => model.CourseComment)" />
+    </div>
+
+    <div class="form-group">
+        <label for="@nameof(Qualification)">@nameof(Qualification) (1-5)</label>
+        <InputNumber id="@nameof(Qualification)" @bind-Value="Qualification" class="form-control" />
+        <ValidationMessage For="@(() => Qualification)" />
+    </div>
+
+    <div class="d-flex justify-content-center mt-2">
+        <button class="btn btn-primary" @onkeypress:preventDefault type="submit">Submit</button>
+    </div>
+</EditForm>
+
+<h2 class="text-center">Comments</h2>
+
+@foreach (var comment in Comments)
+{
+    <p>
+        User id: @comment.UserId <br>
+        Comment: @comment.CourseComment
+    </p>
+}
+
+
+
+@code {
+    private int Qualification
+    {
+        get => _Qualification;
+        set
+        {
+            _Qualification = value > 5 ? 5 : (value < 1 ? 1 : value);
+        }
+    }
+
+
+    private int _Qualification = 1;
+
+    private CommentDto model = new();
+    private List<CommentDto> Comments = new();
+    [Parameter]
+    public int CourseId { get; set; }
+    [Parameter]
+    public int UserId { get; set; }
+    public async Task HandleValidSubmit()
+    {
+        Comments = new();
+        QualificationDto qualificationDto = new()
+            {
+                CourseId = CourseId,
+                UserId = UserId,
+                CourseQualification = _Qualification
+            };
+
+        CommentDto commentDto = new()
+            {
+                CourseId = CourseId,
+                UserId = UserId,
+                CourseComment = model.CourseComment
+            };
+
+        var comments = await CommentServices.GetComments();
+        Comments.AddRange(comments);
+        await QualificationServices.PostQualification(qualificationDto);
+        await CommentServices.PostComment(commentDto);
+        model = new();
+        Qualification = 1;
+    }
+}

@@ -1,10 +1,42 @@
 @page "/CourseList"
 @using Interfaces
 @using Dtos
+@using Services
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
 
+@attribute [Authorize(Roles = "User,Instructor")]
+
+@inject CourseComponentService CourseComponentService
 @inject ICourseServices CourseServices
+@inject NavigationManager NavManager
 
-@if (AllFine)
+<head>
+    <style>
+        .card-title{
+            background-color: rgb(215, 215, 215);
+            border-radius: 15px;
+            font-size: large;
+        }
+        .card{
+            max-height: fit-content;
+        }
+        .course-Image{
+            max-width: 150px;
+        }
+    </style>
+</head>
+
+
+@if (Courses == null)
+{
+    <div class="spinner"></div>
+}
+else if (Courses.Count() == 0)
+{
+    <p>There are no courses to see</p>
+}
+else
 {
     <div class="container">
         <div class="row">
@@ -13,48 +45,44 @@
                 var base64String = Convert.ToBase64String(item.Image);
                 var imageSrc = $"data:image/png;base64,{base64String}";
 
-                <div class="col-sm-3 mb-3 mb-sm-3">
-                    <div class="card" style="width: 18rem;">
-                        <img src="@imageSrc" class="card-img-top p-3" alt="Image">
-                        <div class="card-body">
-                            <h5 class="aling-text-center card-title">@item.Title</h5>
-                            <p class="card-text">@item.Description</p>
-                            <p class="card-text">@item.InstructorId</p>
-                            <p class="card-text">@item.AverageRating</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
+                <a @onclick="() => NavigateToCourseDetails(item.Id)" style="cursor: pointer;">
+                    <div class="col-12 mb-3">
+                        <div class="card mb-3 p-3">
+                            <div class="row g-0">
+                                <div class="col-md-4 ">
+                                    <img src="@imageSrc"  class="img-fluid rounded-start course-Image" alt="Image">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">@item.Title</h5>
+                                        <p class="card-text text-center">@item.Description</p>
+                                        <p class="card-text text-end">
+                                            <small class="text-body-secondary me-1">Instructor Id: @item.InstructorId</small>
+                                            <small class="text-body-secondary">Average rate: @item.AverageRating</small>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                </a>
+
             }
         </div>
-    </div>
-}
-else
-{
-    <div class="container text-center">
-        <h2>Error</h2>
-        <p>@Error</p>
-        <p>Usually the api is disconected</p>
     </div>
 }
 
 @code {
     private IEnumerable<CourseDto> Courses;
-    private string Error;
-    private bool AllFine = true;
 
     protected override async Task OnInitializedAsync()
     {
-        try
-        {
-            await base.OnInitializedAsync();
-            Courses = await CourseServices.GetCourses();
-            AllFine = true;
-        }
-        catch (Exception e)
-        {
-            Error = $"An error has occurred: {e.Message}";
-            AllFine = false;
-        }
+        await base.OnInitializedAsync();
+        Courses = await CourseServices.GetCourses();
+    }
+    private void NavigateToCourseDetails(int courseId)
+    {
+        CourseComponentService.SetSelectedCourseId(courseId);
+        NavManager.NavigateTo($"CourseDetails/{courseId}");
     }
 }

@@ -2,7 +2,18 @@
 
 @using Dtos
 @using Interfaces
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Services
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations
+
+@inject AuthenticationStateProvider authenticationProvider
+@inject IInstructorServices InstructorServices
 @inject ICourseServices CourseServices
+
+
+@attribute [Authorize(Roles ="Instructor")]
 
 <PageTitle>Course Register</PageTitle>
 
@@ -23,13 +34,6 @@
         <InputText id="@nameof(model.Description)" @bind-Value="model.Description" class="form-control" />
         <ValidationMessage For="@(() => model.Description)" />
     </div>
-
-    <div class="form-group">
-    <label for="@nameof(model.InstructorId)">Instructor ID</label>
-    <InputNumber type="number" id="@nameof(model.InstructorId)" @bind-Value="model.InstructorId" class="form-control" />
-    <ValidationMessage For="@(() => model.InstructorId)" />
-    </div>
-
 
     <div class="mt-2 pt-2 d-flex justify-content-center">    
         <InputFile class="form-control" OnChange="HandleChange" accept=".png, .jpg, .jpeg" />
@@ -53,12 +57,13 @@
 @code {
     private long maxFileSize = 1024 * 1024 * 3; // 3MB
     private List<string> errors = new();
-    
+        
+
     private record Model
     {
         public string Title { get; set; }
+        [MaxLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
         public string Description { get; set; }
-        public int InstructorId { get; set; }
         public IBrowserFile File { get; set; }
     }
 
@@ -81,11 +86,17 @@
                 return;
             }
 
+            var AuthService = (AuthenticationService)authenticationProvider;
+            var userInformation = await AuthService.GetAuthenticationStateAsync();
+            Console.WriteLine((userInformation.User?.FindFirst(ClaimTypes.Name).Value));
+            var Instructor = await InstructorServices.GetInstructorByName(userInformation.User?.FindFirst(ClaimTypes.Name).Value);
+            var InstructorId = Instructor.Id;
+
             CourseDto courseDto = new()
             {
                 Title= model.Title,
                 Description = model.Description,
-                InstructorId = model.InstructorId,
+                InstructorId = InstructorId,
                 AverageRating = 0
             };
 
@@ -96,6 +107,7 @@
                 var byteArray = memoryStream.ToArray();
                 courseDto.Image = byteArray;
             }
+            Console.WriteLine($"t:{courseDto.Title} d:{courseDto.Description}i:{courseDto.InstructorId}img:{courseDto.Image}");
 
             bool result = await CourseServices.PostCourse(courseDto);
             if (result)

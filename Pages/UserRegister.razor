@@ -2,7 +2,9 @@
 
 @using Dtos
 @using Interfaces
-
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize(Roles ="Instructor")]
 @inject IUserServices Userservices
 
 <h2 class="text-center">Register</h2>

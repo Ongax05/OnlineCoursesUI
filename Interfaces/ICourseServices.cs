@@ -9,6 +9,7 @@ namespace OnlineCoursesUI.Interfaces
     public interface ICourseServices
     {
         Task<IEnumerable<CourseDto>> GetCourses ();
+        Task<CourseWithEntities> GetCourseById(int Id);
         Task<bool> PostCourse (CourseDto courseDto);
     }
 }
