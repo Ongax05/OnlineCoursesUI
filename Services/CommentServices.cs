@@ -12,10 +12,15 @@ namespace OnlineCoursesUI.Services
             var response = await _httpClient.PostAsJsonAsync("api/Comment", commentDto);
             return response.IsSuccessStatusCode;
         }
-
-        public async Task<List<CommentDto>> GetComments()
+        public async Task<List<CommentDto>> GetCommentsByCourse(int CourseId)
         {
-            var response = await _httpClient.GetFromJsonAsync<List<CommentDto>>("api/Comment");
+            var response = await _httpClient.GetFromJsonAsync<List<CommentDto>>($"api/Comment/ByCourse?CourseId={CourseId}");
+            return response;
+        }
+
+        public async Task<List<CommentDto>> GetCommentsByUser(int UserId)
+        {
+            var response = await _httpClient.GetFromJsonAsync<List<CommentDto>>($"api/Comment/ByCourse?UserId={UserId}");
             return response;
         }
     }

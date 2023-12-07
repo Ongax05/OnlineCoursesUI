@@ -9,6 +9,7 @@ namespace OnlineCoursesUI.Interfaces
     public interface ICommentServices
     {
         Task<bool> PostComment (CommentDto commentDto);
-        Task<List<CommentDto>> GetComments();
+        Task<List<CommentDto>> GetCommentsByCourse(int CourseId);
+        Task<List<CommentDto>> GetCommentsByUser(int UserId);
     }
 }

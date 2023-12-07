@@ -67,7 +67,7 @@ else
     public int UserId {get;set;}
     protected override async void OnInitialized()
     {
-        var comments = await CommentServices.GetComments();
+        var comments = await CommentServices.GetCommentsByCourse(int.Parse20(CourseId));
         Comments.AddRange(comments);
 
         var AuthService = (AuthenticationService)authenticationProvider;

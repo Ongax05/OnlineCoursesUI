@@ -92,7 +92,7 @@
 
         await QualificationServices.PostQualification(qualificationDto);
         await CommentServices.PostComment(commentDto);
-        var comments = await CommentServices.GetComments();
+        var comments = await CommentServices.GetCommentsByCourse(CourseId);
         Comments.AddRange(comments);
         model = new();
         Qualification = 1;
