@@ -13,17 +13,43 @@
 
 <head>
     <style>
-        .card-title{
-            background-color: rgb(215, 215, 215);
-            border-radius: 15px;
-            font-size: large;
+        .container {
+            margin-top: 15px;
         }
-        .card{
-            max-height: fit-content;
+
+        .main-row {
+            padding: 10px;
         }
-        .course-Image{
-            max-width: 150px;
+
+        .image {
+            max-width: 200px;
+            object-fit: contain;
+            max-height: 200px;
         }
+
+        .image-col{
+            border: 1px solid rgb(184, 184, 184);
+            border-bottom-left-radius: 12px;
+            border-top-left-radius: 12px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-col{
+            border: 1px solid rgb(184, 184, 184);
+            border-top-right-radius: 12px;
+            border-bottom-right-radius: 12px;
+        }
+        .last-row{
+            border-top: 1px solid rgb(184, 184, 184);
+        }
+        .desc-row{
+            border-top: 1px solid rgb(184, 184, 184);
+        }
+
+
     </style>
 </head>
 
@@ -39,36 +65,51 @@ else if (Courses.Count() == 0)
 else
 {
     <div class="container">
-        <div class="row">
-            @foreach (var item in Courses)
-            {
-                var base64String = Convert.ToBase64String(item.Image);
-                var imageSrc = $"data:image/png;base64,{base64String}";
-
-                <a @onclick="() => NavigateToCourseDetails(item.Id)" style="cursor: pointer;">
-                    <div class="col-12 mb-3">
-                        <div class="card mb-3 p-3">
-                            <div class="row g-0">
-                                <div class="col-md-4 ">
-                                    <img src="@imageSrc"  class="img-fluid rounded-start course-Image" alt="Image">
+        @foreach (var item in Courses)
+        {
+            var base64String = Convert.ToBase64String(item.Image);
+            var imageSrc = $"data:image/png;base64,{base64String}";
+            <a @onclick="() => NavigateToCourseDetails(item.Id)" style="cursor: pointer;">
+                <div class="row d-flex mb-3 main-row align-items-stretch">
+                    <div class="col-4 image-col">
+                        <img src="@imageSrc" class="image" alt="CourseImage">
+                    </div>
+                    <div class="col-8 main-col d-flex flex-column">
+                        <div class="flex-grow-1">
+                            <!-- Título (20%) -->
+                            <div class="row title-row h-20">
+                                <div class="col-12 align-items-center justify-content-center">
+                                    <h2 class="text-center m-1">
+                                        @item.Title
+                                    </h2>
                                 </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title text-center">@item.Title</h5>
-                                        <p class="card-text text-center">@item.Description</p>
-                                        <p class="card-text text-end">
-                                            <small class="text-body-secondary me-1">Instructor Id: @item.InstructorId</small>
-                                            <small class="text-body-secondary">Average rating: @item.AverageRating</small>
-                                        </p>
-                                    </div>
+                            </div>
+                            <!-- Descripción (70%) -->
+                            <div class="row desc-row h-70">
+                                <div class="col-12 align-items-center">
+                                    <p>
+                                        @item.Description
+                                    </p>
                                 </div>
                             </div>
                         </div>
+                        <!-- Última fila (Restante) -->
+                        <div class="row last-row mt-auto">
+                            <div class="col-4 d-flex align-items-center">
+                                <h6 class="text-start">
+                                    Course average: @item.AverageRating
+                                </h6>
+                            </div>
+                            <div class="col-8 d-flex align-items-center" style="border-left: 1px solid rgb(184, 184, 184);">
+                                <h6 class="text-end  pe-2">
+                                    Profesor id @item.InstructorId
+                                </h6>
+                            </div>
+                        </div>
                     </div>
-                </a>
-
-            }
-        </div>
+                </div>
+            </a>
+        }
     </div>
 }
 

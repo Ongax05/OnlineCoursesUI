@@ -17,6 +17,18 @@
 @inject ICourseServices CourseServices
 @inject NavigationManager NavManager
 
+<head>
+    <style>
+        .user-id{
+            border-right: 1px solid rgb(184, 184, 184);
+        }
+        .main-row-comment{
+            border: 1px solid rgb(184, 184, 184);
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
 <EditForm Model="model" OnValidSubmit="HandleValidSubmit">
     <DataAnnotationsValidator />
     <ValidationSummary />
@@ -38,15 +50,23 @@
     </div>
 </EditForm>
 
+
+<h2 class="text-center m-5">Comments</h2>
 @if (Comments.Count() > 0)
 {
-    foreach (var comment in Comments)
-    {
-        <p>
-            User id: @comment.UserId <br>
-            Comment: @comment.CourseComment
-        </p>
-    }
+    <div class="container mb-3">
+        @foreach (var comment in Comments)
+        {
+            <div class="row main-row-comment mt-2">
+                <div class="col-1 p-1 user-id" >
+                    User id @comment.UserId
+                </div>
+                <div class="col-11 p-1 comment">
+                    @comment.CourseComment
+                </div>
+            </div>
+        }
+    </div>
 }
 
 
@@ -68,7 +88,7 @@
     private CommentDto model = new();
 
     [Parameter]
-    public List<CommentDto> Comments {get;set;}
+    public List<CommentDto> Comments { get; set; }
     [Parameter]
     public int CourseId { get; set; }
     [Parameter]

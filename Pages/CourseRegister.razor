@@ -13,7 +13,7 @@
 @inject ICourseServices CourseServices
 
 
-@attribute [Authorize(Roles ="Instructor")]
+@attribute [Authorize(Roles = "Instructor")]
 
 <PageTitle>Course Register</PageTitle>
 
@@ -22,7 +22,7 @@
 <EditForm Model="model" OnValidSubmit="LoadCourse">
     <DataAnnotationsValidator />
     <ValidationSummary />
-    
+
     <div class="form-group">
         <label for="@nameof(model.Title)">@nameof(model.Title)</label>
         <InputText id="@nameof(model.Title)" @bind-Value="model.Title" class="form-control" />
@@ -35,7 +35,7 @@
         <ValidationMessage For="@(() => model.Description)" />
     </div>
 
-    <div class="mt-2 pt-2 d-flex justify-content-center">    
+    <div class="mt-2 pt-2 d-flex justify-content-center">
         <InputFile class="form-control" OnChange="HandleChange" accept=".png, .jpg, .jpeg" />
     </div>
     <div class="m-2 p-2 d-flex justify-content-center">
@@ -57,7 +57,7 @@
 @code {
     private long maxFileSize = 1024 * 1024 * 3; // 3MB
     private List<string> errors = new();
-        
+
 
     private record Model
     {
@@ -67,9 +67,9 @@
         public IBrowserFile File { get; set; }
     }
 
-    private Model model = new ();
+    private Model model = new();
 
-    private void HandleChange (InputFileChangeEventArgs e)
+    private void HandleChange(InputFileChangeEventArgs e)
     {
         model.File = e.GetMultipleFiles(1)[0];
     }
@@ -93,12 +93,12 @@
             var InstructorId = Instructor.Id;
 
             CourseDto courseDto = new()
-            {
-                Title= model.Title,
-                Description = model.Description,
-                InstructorId = InstructorId,
-                AverageRating = 0
-            };
+                {
+                    Title = model.Title,
+                    Description = model.Description,
+                    InstructorId = InstructorId,
+                    AverageRating = 0
+                };
 
             using (var stream = model.File.OpenReadStream(maxFileSize))
             {
@@ -112,14 +112,14 @@
             bool result = await CourseServices.PostCourse(courseDto);
             if (result)
             {
-                model = new ();
+                model = new();
             }
         }
         catch (Exception ex)
         {
             errors.Add($"Error: {ex}");
-            model = new ();
+            model = new();
         }
-        
+
     }
 }

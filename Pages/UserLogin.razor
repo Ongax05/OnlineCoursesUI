@@ -12,32 +12,47 @@
 @inject AuthenticationStateProvider authenticationProvider
 @inject NavigationManager NavManager
 
-<h2 class="text-center">Login</h2>
-<div class="container p-5 d-flex justify-content-center">
-    <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+<head>
+    <style>
+        #FormCol {
+            border: 1px solid rgb(184, 184, 184);
+            border-radius: 15px;
+        }
+    </style>
+</head>
 
-        <div class="form-group">
-            <label for="@nameof(Model.Username)">@nameof(Model.Username)</label>
-            <InputText id="@nameof(Model.Username)" @bind-Value="Model.Username" class="form-control" />
-            <ValidationMessage For="@(() => Model.Username)" />
-        </div>
+<div class="container vh-100 d-flex align-items-center justify-content-center">
+    <div class="row">
+        <div id="FormCol" class="col">
+            <h1 class="text-center m-2">Login</h1>
+            <EditForm Model="Model" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-        <div class="form-group">
-            <label for="@nameof(Model.Password)">@nameof(Model.Password)</label>
-            <InputText type="password" id="@nameof(Model.Password)" @bind-Value="Model.Password" class="form-control" />
-            <ValidationMessage For="@(() => Model.Password)" />
-        </div>
+                <div class="form-group">
+                    <label for="@nameof(Model.Username)">@nameof(Model.Username)</label>
+                    <InputText id="@nameof(Model.Username)" @bind-Value="Model.Username" class="form-control" />
+                    <ValidationMessage For="@(() => Model.Username)" />
+                </div>
 
-        <div class="m-2 p-2 d-flex justify-content-center">
-            <button type="submit" @onkeypress:preventDefault class="btn btn-primary">Submit</button>
+                <div class="form-group">
+                    <label for="@nameof(Model.Password)">@nameof(Model.Password)</label>
+                    <InputText type="password" id="@nameof(Model.Password)" @bind-Value="Model.Password"
+                        class="form-control" />
+                    <ValidationMessage For="@(() => Model.Password)" />
+                </div>
+
+                <div class="m-2 p-2 d-flex justify-content-center">
+                    <button type="submit" @onkeypress:preventDefault class="btn btn-primary">Submit</button>
+                </div>
+            </EditForm>
         </div>
-    </EditForm>
+    </div>
 </div>
+
 @if (!CorrectLogin)
 {
-    <h3 style="color: rgb(248, 0, 0);" class="text-center">Invalid user nor password</h3>
+    <h3 style="color: rgb(248, 0, 0);" class="text-center">Invalid user or password</h3>
 }
 
 @code {

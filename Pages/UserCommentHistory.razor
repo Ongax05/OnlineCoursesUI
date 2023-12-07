@@ -15,22 +15,53 @@
 
 @attribute [Authorize(Roles = "User,Instructor")]
 
+<head>
+    <style>
+        .comment-id {
+            border-right: 1px solid rgb(184, 184, 184);
+        }
 
+        .main-row-comment {
+            border: 1px solid rgb(184, 184, 184);
+            border-radius: 5px;
+        }
 
-    @foreach (var ucapc in userCommentsAveragePerCourse)
-    {
-        <div style="border: 1px solid black;" class="mt-2 mb-2">
-            <h1>@ucapc.Course</h1>
-            <h2>Average: @ucapc.Average</h2>
-            @foreach (var comment in ucapc.Comments)
-            {
-                <div>
-                    <p>Course @comment.CourseId User @comment.UserId</p>
-                    <p>@comment.CourseComment</p>
+        .container {
+            border: 1px solid rgb(184, 184, 184);
+        }
+    </style>
+</head>
+
+@foreach (var ucapc in userCommentsAveragePerCourse)
+{
+    <div class="container p-5 mt-2 mb-5">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-12">
+                        <h1 class="text-center">@ucapc.Course</h1>
+                    </div>
+                    <div class="col-12">
+                        <h3 class="text-center">Your average qualification of this course: @Math.Round(ucapc.Average,2)</h3>
+                    </div>
                 </div>
-            }
+            </div>
+            <div class="col-12">
+                @foreach (var comment in ucapc.Comments)
+                {
+                    <div class="row main-row-comment mt-2">
+                        <div class="col-2 p-1 comment-id">
+                            Comment id @comment.Id
+                        </div>
+                        <div class="col-10 p-1 comment">
+                            @comment.CourseComment
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
-    }
+    </div>
+}
 
 
 @code {
