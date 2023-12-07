@@ -17,6 +17,7 @@ builder.Services.AddScoped<IInstructorServices, InstructorServices>();
 builder.Services.AddScoped<AuthenticationStateProvider,AuthenticationService>();
 builder.Services.AddScoped<IQualificationServices, QualificationServices>();
 builder.Services.AddScoped<ICommentServices,CommentServices>();
+builder.Services.AddHostedService<RefreshTokenService>();
 builder.Services.AddSingleton<CourseComponentService>();
 builder.Services.AddBlazoredSessionStorage();
 builder.Services.AddAuthorizationCore();
