@@ -9,5 +9,7 @@ namespace OnlineCoursesUI.Interfaces
     public interface IQualificationServices
     {
         Task<bool> PostQualification (QualificationDto qualificationDto);
+        Task<AverageDto> GetAverageQualificationByCourse(int CourseId);
+        Task<List<QualificationDto>> GetQualificationsByUser(int UserId);
     }
 }

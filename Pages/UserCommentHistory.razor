@@ -1,0 +1,69 @@
+@page "/UserCommentHistory"
+
+@using Dtos
+@using Interfaces
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Services
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations
+
+@inject AuthenticationStateProvider authenticationProvider
+@inject IQualificationServices QualificationServices
+@inject ICommentServices CommentServices
+@inject ICourseServices CourseServices
+
+@attribute [Authorize(Roles = "User,Instructor")]
+
+
+
+    @foreach (var ucapc in userCommentsAveragePerCourse)
+    {
+        <div style="border: 1px solid black;" class="mt-2 mb-2">
+            <h1>@ucapc.Course</h1>
+            <h2>Average: @ucapc.Average</h2>
+            @foreach (var comment in ucapc.Comments)
+            {
+                <div>
+                    <p>Course @comment.CourseId User @comment.UserId</p>
+                    <p>@comment.CourseComment</p>
+                </div>
+            }
+        </div>
+    }
+
+
+@code {
+    public record UserCommentsAveragePerCourse
+    {
+        public string Course { get; set; }
+        public List<CommentDto> Comments { get; set; }
+        public double Average { get; set; }
+    }
+    private List<UserCommentsAveragePerCourse> userCommentsAveragePerCourse = new();
+
+    protected override async Task OnInitializedAsync()
+
+    {
+        var AuthService = (AuthenticationService)authenticationProvider;
+        var userInformation = await AuthService.GetAuthenticationStateAsync();
+        var UserId = int.Parse(userInformation.User.FindFirst("UserId").Value);
+
+        var comments = await CommentServices.GetCommentsByUser(UserId);
+        var qualifications = await QualificationServices.GetQualificationsByUser(UserId);
+
+
+        var GroupedComments = comments.GroupBy(c => c.CourseId).ToList();
+        var GroupedQualifications = qualifications.GroupBy(q => q.CourseId).ToList();
+
+        var groupedData = await Task.WhenAll(GroupedComments.Select(async group => new UserCommentsAveragePerCourse
+            {
+                Course = (await CourseServices.GetCourseById(group.Key)).Title,
+                Comments = group.ToList(),
+                Average = GroupedQualifications.Where(G => G.Key == group.Key).SelectMany(q => q.Select(cq =>
+                cq.CourseQualification)).Average()
+            }));
+
+        userCommentsAveragePerCourse = groupedData.ToList();
+    }
+}
