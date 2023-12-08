@@ -19,10 +19,11 @@
 
 <head>
     <style>
-        .user-id{
+        .user-id {
             border-right: 1px solid rgb(184, 184, 184);
         }
-        .main-row-comment{
+
+        .main-row-comment {
             border: 1px solid rgb(184, 184, 184);
             border-radius: 5px;
         }
@@ -51,14 +52,14 @@
 </EditForm>
 
 
-<h2 class="text-center m-5">Comments</h2>
 @if (Comments.Count() > 0)
 {
+    <h2 class="text-center m-5">Comments</h2>
     <div class="container mb-3">
         @foreach (var comment in Comments)
         {
             <div class="row main-row-comment mt-2">
-                <div class="col-1 p-1 user-id" >
+                <div class="col-1 p-1 user-id">
                     User id @comment.UserId
                 </div>
                 <div class="col-11 p-1 comment">
